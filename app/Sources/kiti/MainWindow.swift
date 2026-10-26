@@ -225,16 +225,34 @@ final class MainModel: ObservableObject {
     func openWord(_ w: String) { lookup(w, quiet: true); MainWindow.show() }
 
     func openTranslate(_ text: String, run: Bool) {
-        mode = .trans; src = text; input = text; out = ""; tState = .idle; articleID = nil
+        mode = .trans; src = text; input = ""; out = ""; tState = .idle; articleID = nil
         MainWindow.show()
         if run { translate() }
+    }
+
+    /// Popover translation → main window: reuse the finished result instead of translating again.
+    func openTranslated(_ text: String, out: String?, dst d: String) {
+        if let out = out, !out.isEmpty {
+            recordArticle(text, out: out, dst: d)
+            if let a = articles.first(where: { $0.src == text }) { restoreArticle(a) }
+            MainWindow.show()
+        } else { openTranslate(text, run: true) }
+    }
+
+    /// Adds a finished popover translation to the 查句 history (same source text → replaced, not duplicated).
+    func recordArticle(_ text: String, out: String, dst d: String) {
+        let id = articles.first(where: { $0.src == text })?.id ?? UUID().uuidString
+        articles.removeAll { $0.id == id }
+        articles.insert(ArticleItem(id: id, src: text, out: out, dst: d, t: Date()), at: 0)
+        articles = Array(articles.prefix(HistoryStore.capArticles))
+        persist()
     }
 
     func openDoc() { mode = .doc; MainWindow.show() }
 
     private func restoreArticle(_ a: ArticleItem) {
         tTask?.cancel()
-        mode = .trans; src = a.src; input = a.src; out = a.out; dst = a.dst; dirLocked = true; tState = .done; articleID = a.id
+        mode = .trans; src = a.src; input = ""; out = a.out; dst = a.dst; dirLocked = true; tState = .done; articleID = a.id
     }
 
     private func restoreDoc(_ d: DocItem) {
@@ -616,7 +634,10 @@ struct DictPane: View {
                     }
                 } else if let e = m.entry {
                     VStack(alignment: .leading, spacing: 12) {
-                        Text(e.headword).font(.system(size: 28, weight: .semibold)).foregroundStyle(T.fg)
+                        HStack(alignment: .center, spacing: 6) {
+                            Text(e.headword).font(.system(size: 28, weight: .semibold)).foregroundStyle(T.fg)
+                            IconButton(symbol: "doc.on.doc", tip: "复制单词、音标和全部释义") { copyToPasteboard(e.fullText) }
+                        }
                         PronunciationRow(entry: e)
                     }
                     let info = Ecdict.info(for: e.headword)
@@ -682,17 +703,26 @@ struct TransPane: View {
                 Text("在上面输入一句话或一段文字，回车翻译。").foregroundStyle(T.fg2)
             }.frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack(spacing: 8) {
-                    Text("译文").font(.system(size: 12, weight: .medium)).foregroundStyle(T.fg2)
-                    Text("\(m.src.count) 字").font(.system(size: 11)).foregroundStyle(T.fg3).monospacedDigit()
-                    Spacer()
-                    DirPill(from: m.dst == "zh" ? Lang.of(m.settings.otherLang).zh : "中文", to: Lang.of(m.dst).zh) { m.swapDirection() }
-                    IconButton(symbol: "arrow.clockwise", tip: "重新翻译") { m.translate(skipCache: true) }
-                    IconButton(symbol: "speaker.wave.2", tip: "朗读译文") { Speech.shared.speakAuto(m.out) }
-                    IconButton(symbol: "doc.on.doc", tip: "复制译文") { copyToPasteboard(m.out) }
-                }
-                ScrollView {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 14) {
+                    HStack(spacing: 8) {
+                        Text("原文").font(.system(size: 12, weight: .medium)).foregroundStyle(T.fg2)
+                        Text("\(m.src.count) 字").font(.system(size: 11)).foregroundStyle(T.fg3).monospacedDigit()
+                        Spacer()
+                        IconButton(symbol: "speaker.wave.2", tip: "朗读原文") { Speech.shared.speakAuto(m.src) }
+                        IconButton(symbol: "doc.on.doc", tip: "复制原文") { copyToPasteboard(m.src) }
+                    }
+                    WordText(runs: [WordRun(text: m.src, size: 14, color: T.fg2)], lineSpacing: 7, onWord: { PopoverController.shared.peek($0) })
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    Sep()
+                    HStack(spacing: 8) {
+                        Text("译文").font(.system(size: 12, weight: .medium)).foregroundStyle(T.fg2)
+                        Spacer()
+                        DirPill(from: m.dst == "zh" ? Lang.of(m.settings.otherLang).zh : "中文", to: Lang.of(m.dst).zh) { m.swapDirection() }
+                        IconButton(symbol: "arrow.clockwise", tip: "重新翻译") { m.translate(skipCache: true) }
+                        IconButton(symbol: "speaker.wave.2", tip: "朗读译文") { Speech.shared.speakAuto(m.out) }
+                        IconButton(symbol: "doc.on.doc", tip: "复制译文") { copyToPasteboard(m.out) }
+                    }
                     Group {
                         if case .failed(let t, let d) = m.tState {
                             HStack(alignment: .top, spacing: 10) {
@@ -711,8 +741,8 @@ struct TransPane: View {
                         }
                     }.frame(maxWidth: .infinity, alignment: .leading)
                 }
+                .padding(.horizontal, 24).padding(.vertical, 20)
             }
-            .padding(.horizontal, 24).padding(.vertical, 20)
         }
     }
 }
@@ -824,5 +854,26 @@ struct StatusPill: View {
             }
         }()
         Text(t).font(.system(size: 11.5)).foregroundStyle(fg).padding(.horizontal, 8).frame(height: 18).background(bg, in: Capsule())
+    }
+}
+
+extension DictEntry {
+    /// Headword + phonetics + every sense, for the copy button in the dictionary pane.
+    var fullText: String {
+        var lines = [headword]
+        var ph: [String] = []
+        if !phoneticUS.isEmpty { ph.append("美 \(phoneticUS)") }
+        if !phoneticUK.isEmpty { ph.append("英 \(phoneticUK)") }
+        if ph.isEmpty, !phonetic.isEmpty { ph.append(phonetic) }
+        if !ph.isEmpty { lines.append(ph.joined(separator: "  ")) }
+        for b in blocks {
+            for (i, sn) in b.senses.enumerated() {
+                let head = (i == 0 ? b.pos : "")
+                let body = [sn.gloss, sn.zh].filter { !$0.isEmpty }.joined(separator: " ")
+                lines.append(([head, body].filter { !$0.isEmpty }).joined(separator: " "))
+                if let ex = sn.ex, !ex.isEmpty { lines.append("    " + ex) }
+            }
+        }
+        return lines.joined(separator: "\n")
     }
 }

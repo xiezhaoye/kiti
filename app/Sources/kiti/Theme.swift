@@ -101,7 +101,7 @@ struct DirPill: View {
         Button(action: action) {
             HStack(spacing: 5) { Text(from); Image(systemName: "arrow.left.arrow.right").font(.system(size: 12, weight: .semibold)); Text(to) }
                 .font(.system(size: 12, weight: .medium)).foregroundStyle(T.fg).modifier(FillPill())
-        }.buttonStyle(PressStyle())
+        }.buttonStyle(PressStyle()).fixedSize().layoutPriority(2)
     }
 }
 

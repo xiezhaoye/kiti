@@ -351,6 +351,7 @@ struct SettingsView: View {
             SRow(label: "开机自启", first: true) { KSwitch(on: $s.launchAtLogin) }
             SRow(label: "关闭主窗口时退出 kiti", hint: "关闭时：窗口左上角红点关闭后整个 kiti 退出；默认不退出，继续留在菜单栏") { KSwitch(on: $s.quitOnClose) }
             SRow(label: "在 Dock 中显示", hint: "默认不显示，只留菜单栏图标") { KSwitch(on: $s.showInDock) }
+            SRow(label: "取词诊断", hint: "其他 App 里划词没反应时点这里：显示辅助功能授权状态和最近几次划选的处理结果") { KBtn(title: "查看…") { delegate.menuDiag() } }
             SRow(label: "界面大小", hint: "立即生效；也可在 kiti 窗口里按 ⌥＋ / ⌥－（或 ⌘＋ / ⌘－）缩放，⌥0 恢复 100%") { KPopup(sel: $s.uiScale, items: ScaleSync.labels) }
         }
         SGroup(title: "历史记录") {

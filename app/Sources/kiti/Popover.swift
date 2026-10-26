@@ -34,6 +34,7 @@ final class PopoverController {
     private var sizeObs: NSKeyValueObservation?
     private var task: Task<Void, Never>?
     private var topLeft = NSPoint.zero
+    private var visible = NSRect.zero
     private let settings = AppSettings.shared
 
     var isVisible: Bool { panel?.isVisible ?? false }
@@ -57,7 +58,28 @@ final class PopoverController {
             model.kind = .capsule
         }
         present(near: mouse)
-        HotKeys.shared.setReturnHook(model.kind == .capsule ? { [weak self] in self?.startTranslate() } : nil)
+        updateReturnHook()
+    }
+
+    /// Return: capsule → translate; word / translation → open in the main window.
+    private func updateReturnHook() {
+        switch model.kind {
+        case .capsule: HotKeys.shared.setReturnHook { [weak self] in self?.startTranslate() }
+        case .word: HotKeys.shared.setReturnHook(model.entry == nil ? nil : { [weak self] in self?.openInMain() })
+        case .translate: HotKeys.shared.setReturnHook { [weak self] in self?.openInMain() }
+        }
+    }
+
+    func openInMain() {
+        switch model.kind {
+        case .word:
+            guard let e = model.entry else { return }
+            MainModel.shared.openWord(e.headword)
+        case .translate:
+            MainModel.shared.openTranslated(model.text, out: model.state == .done ? model.output : nil, dst: model.dst)
+        case .capsule: return
+        }
+        dismiss()
     }
 
     func showTranslation(text: String, at mouse: NSPoint) {
@@ -65,7 +87,7 @@ final class PopoverController {
         model.text = text; model.output = ""; model.entry = nil; model.kind = .translate; model.state = .idle
         run(skipCache: false)
         present(near: mouse)
-        HotKeys.shared.setReturnHook(nil)
+        updateReturnHook()
     }
 
     /// Double-clicked word inside the popover: show that word's entry in place.
@@ -73,6 +95,7 @@ final class PopoverController {
         guard let e = LocalDictionary.lookup(w) else { HUD.show("词典里没有 “\(w)”"); return }
         model.text = w; model.entry = e; model.kind = .word
         MainModel.shared.addHistory(e.headword)
+        updateReturnHook()
     }
 
     /// Double-clicked a word inside the main window: show its meaning in the popover first.
@@ -87,7 +110,7 @@ final class PopoverController {
     }
 
     // MARK: actions
-    func startTranslate() { HotKeys.shared.setReturnHook(nil); model.kind = .translate; run(skipCache: false) }
+    func startTranslate() { model.kind = .translate; run(skipCache: false); updateReturnHook() }
     func redo() { run(skipCache: true) }
 
     func swapDirection() {
@@ -111,6 +134,7 @@ final class PopoverController {
     func translateWord() {
         model.kind = .translate
         run(skipCache: false)
+        updateReturnHook()
     }
 
     private func cancel() { task?.cancel(); task = nil }
@@ -137,7 +161,10 @@ final class PopoverController {
                         self.model.state = .streaming
                     }
                 }
-                if !Task.isCancelled { self.model.state = .done }
+                if !Task.isCancelled {
+                    self.model.state = .done
+                    if self.model.kind == .translate { MainModel.shared.recordArticle(text, out: self.model.output, dst: dst) }
+                }
             } catch {
                 if Task.isCancelled || (error as? URLError)?.code == .cancelled { return }
                 let te = (error as? TranslateError) ?? .network(error.localizedDescription)
@@ -170,20 +197,28 @@ final class PopoverController {
         let size = host?.preferredContentSize ?? NSSize(width: 360, height: 140)
         let screen = NSScreen.screens.first { $0.frame.contains(mouse) } ?? NSScreen.main!
         let vf = screen.visibleFrame
-        var x = mouse.x - 24
+        visible = vf
         var topY = mouse.y - 14                     // below the cursor
         if topY - size.height < vf.minY { topY = mouse.y + size.height + 28 }   // not enough room: flip above
-        x = min(max(x, vf.minX + 8), vf.maxX - size.width - 8)
-        topY = min(topY, vf.maxY - 8)
-        topLeft = NSPoint(x: x, y: topY)
-        panel?.setFrame(NSRect(x: x, y: topY - size.height, width: size.width, height: size.height), display: true)
+        topLeft = NSPoint(x: mouse.x - 24, y: topY)
+        panel?.setFrame(fitted(size), display: true)
         panel?.alphaValue = 1
         panel?.orderFrontRegardless()
     }
 
     private func resizeKeepingTop() {
         guard let p = panel, p.isVisible, let s = host?.preferredContentSize, s.height > 0 else { return }
-        p.setFrame(NSRect(x: topLeft.x, y: topLeft.y - s.height, width: s.width, height: s.height), display: true)
+        p.setFrame(fitted(s), display: true)
+    }
+
+    /// Frame for `size` anchored at `topLeft`, nudged so the whole panel stays inside the screen (content grows while translating).
+    private func fitted(_ size: NSSize) -> NSRect {
+        let vf = visible
+        let x = min(max(topLeft.x, vf.minX + 8), max(vf.minX + 8, vf.maxX - size.width - 8))
+        var top = min(topLeft.y, vf.maxY - 8)
+        if top - size.height < vf.minY + 8 { top = min(vf.minY + 8 + size.height, vf.maxY - 8) }
+        topLeft = NSPoint(x: x, y: top)
+        return NSRect(x: x, y: top - size.height, width: size.width, height: size.height)
     }
 }
 
@@ -232,10 +267,11 @@ struct PopFooter: View {
     let ctl: PopoverController
     var body: some View {
         HStack(spacing: 2) {
+            KitiMark().padding(.trailing, 8).fixedSize().layoutPriority(2)
             Text(source).font(.system(size: 11.5)).foregroundStyle(T.fg3).lineLimit(1)
             Spacer(minLength: 8)
             IconButton(symbol: "doc.on.doc", tip: "复制") { copyToPasteboard(copy) }
-            IconButton(symbol: "arrow.up.forward.square", tip: "在主窗口打开") { MainModel.shared.openWord(open); ctl.dismiss() }
+            IconButton(symbol: "arrow.up.forward.square", tip: "在主窗口打开（回车）") { MainModel.shared.openWord(open); ctl.dismiss() }
         }
         .padding(.leading, 16).padding(.trailing, 8).frame(minHeight: 38)
         .overlay(alignment: .top) { Rectangle().fill(T.sep).frame(height: 0.5) }
@@ -265,10 +301,10 @@ struct PopoverView: View {
     var capsule: some View {
         Button { ctl.startTranslate() } label: {
             HStack(spacing: 7) {
-                LogoImage().frame(width: 22, height: 22)
-                Text("翻译").font(.system(size: 13, weight: .medium)).foregroundStyle(T.fg)
+                Bird().frame(height: 19)
+                Text("kiti翻译").font(.system(size: 13, weight: .medium)).foregroundStyle(T.fg)
             }
-            .padding(.leading, 4).padding(.trailing, 14).frame(height: 30)
+            .padding(.leading, 11).padding(.trailing, 14).frame(height: 30)
         }
         .buttonStyle(PressStyle()).fixedSize()
     }
@@ -291,6 +327,7 @@ struct PopoverView: View {
                 Text(model.text).font(.system(size: 23, weight: .semibold)).foregroundStyle(T.fg).padding(.horizontal, 16).padding(.top, 14)
                 Text("系统词典里没有这个词。").font(.system(size: 14)).foregroundStyle(T.fg2).padding(.horizontal, 16).padding(.vertical, 8)
                 HStack {
+                    KitiMark().padding(.trailing, 8)
                     Text("系统词典").font(.system(size: 11.5)).foregroundStyle(T.fg3)
                     Spacer()
                     KBtn(title: "翻译这个词", primary: true) { ctl.translateWord() }
@@ -304,10 +341,21 @@ struct PopoverView: View {
         .onTapGesture { if let e = model.entry { MainModel.shared.openWord(e.headword); ctl.dismiss() } }   // click the card → full entry in the dictionary
     }
 
+    /// Speak / copy buttons that sit right behind a block of text.
+    func textTools(_ text: String, speak: String, copy: String) -> some View {
+        HStack(spacing: 2) {
+            Spacer(minLength: 0)
+            IconButton(symbol: "speaker.wave.2", tip: speak) { Speech.shared.speakAuto(text) }
+            IconButton(symbol: "doc.on.doc", tip: copy) { copyToPasteboard(text) }
+        }
+        .opacity(text.isEmpty ? 0.35 : 1).disabled(text.isEmpty)
+    }
+
     var translate: some View {
         VStack(alignment: .leading, spacing: 0) {
             Text(model.text).font(.system(size: 12.5)).foregroundStyle(T.fg2).lineSpacing(4).lineLimit(2)
                 .padding(.horizontal, 16).padding(.top, 11)
+            textTools(model.text, speak: "朗读原文", copy: "复制原文").padding(.horizontal, 8)
             Group {
                 switch model.state {
                 case .failed(let title, let detail):
@@ -334,18 +382,21 @@ struct PopoverView: View {
                         .padding(.horizontal, 16).padding(.top, 8).padding(.bottom, 14)
                 }
             }
+            if case .failed = model.state {} else {
+                textTools(model.output, speak: "朗读译文", copy: "复制译文").padding(.horizontal, 8)
+            }
             HStack(spacing: 2) {
+                KitiMark().padding(.trailing, 8).fixedSize().layoutPriority(2)
                 DirPill(from: model.dst == "zh" ? Lang.of(AppSettings.shared.otherLang).short : "中", to: model.dst == "zh" ? "中" : Lang.of(model.dst).short) { ctl.swapDirection() }.padding(.trailing, 8)
                 Text(model.providerUsed == .magpie ? AppSettings.shared.modelShort : model.providerUsed.title)
-                    .font(.system(size: 11.5)).foregroundStyle(T.fg3).lineLimit(1)
+                    .font(.system(size: 11.5)).foregroundStyle(T.fg3).lineLimit(1).truncationMode(.tail).layoutPriority(0)
                 Spacer(minLength: 6)
                 if case .failed = model.state {
                     if model.canFallback { KBtn(title: "用备用服务") { ctl.useFallback() } }
                     KBtn(title: "重试", primary: true) { ctl.redo() }.padding(.leading, 4)
                 } else {
                     IconButton(symbol: "arrow.clockwise", tip: "重新翻译") { ctl.redo() }
-                    IconButton(symbol: "speaker.wave.2", tip: "朗读译文") { Speech.shared.speakAuto(model.output) }
-                    IconButton(symbol: "doc.on.doc", tip: "复制译文") { copyToPasteboard(model.output) }
+                    IconButton(symbol: "arrow.up.forward.square", tip: "在主窗口打开（回车）") { ctl.openInMain() }
                 }
             }
             .padding(.leading, 16).padding(.trailing, 8).frame(minHeight: 38)
@@ -379,6 +430,25 @@ struct IconButton: View {
             Image(systemName: symbol).font(.system(size: 14)).frame(width: 26, height: 26)
                 .background(hovered ? T.fill : .clear, in: RoundedRectangle(cornerRadius: 6)).contentShape(Rectangle())
         }.buttonStyle(PressStyle()).foregroundStyle(T.fg2).help(tip).onHover { hovered = $0 }
+    }
+}
+
+/// The bird on a transparent background (Resources/logo-bird.png).
+struct Bird: View {
+    var body: some View {
+        if let img = Bundle.main.image(forResource: "logo-bird") ?? NSImage(contentsOfFile: "Resources/logo-bird.png") {
+            Image(nsImage: img).resizable().aspectRatio(contentMode: .fit)
+        } else { Image(systemName: "character.book.closed") }
+    }
+}
+
+/// Bird + "kiti" wordmark shown at the lower left of the popovers.
+struct KitiMark: View {
+    var body: some View {
+        HStack(spacing: 5) {
+            Bird().frame(height: 16)
+            Text("kiti").font(.system(size: 12, weight: .semibold)).foregroundStyle(T.fg2)
+        }
     }
 }
 

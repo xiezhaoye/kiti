@@ -17,6 +17,7 @@ if [ -f Resources/logo.png ]; then
   done
   iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/AppIcon.icns"
   cp Resources/logo.png "$APP/Contents/Resources/logo.png"
+  cp Resources/logo-bird.png "$APP/Contents/Resources/logo-bird.png"
 fi
 cp Resources/menubar.png Resources/menubar@2x.png "$APP/Contents/Resources/"
 cp Resources/ecdict.tsv "$APP/Contents/Resources/ecdict.tsv"
