@@ -1,0 +1,90 @@
+<!doctype html>
+<!-- Context: kiti, a macOS menu-bar dictionary and translator. Direction: same light Apple-inspired product page as Hoot, real offscreen renders of the native UI. No external fonts, trackers or runtime dependencies. -->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f5f5f7">
+  <title>kiti — 选中就懂，住在菜单栏的 Mac 词典与翻译</title>
+  <meta name="description" content="kiti 是一款免费的 macOS 菜单栏词典与翻译 App。在任何 App 里选中文字，浮层立即给出释义或译文；单词走本机系统词典，句子与整篇文档交给你自己的大模型，以 MIT 协议开源。">
+  <link rel="canonical" href="https://kiti.xiezhaoye.site/">
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="apple-touch-icon" href="assets/logo.png">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:title" content="kiti — 选中就懂，住在菜单栏的 Mac 词典与翻译">
+  <meta property="og:description" content="任何 App 里选中文字，浮层即刻出释义或译文。免费使用，MIT 开源。">
+  <meta property="og:url" content="https://kiti.xiezhaoye.site/">
+  <meta property="og:image" content="https://kiti.xiezhaoye.site/assets/kiti-main.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="style.css">
+  <script src="site.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">跳转到正文</a>
+<header class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#" aria-label="kiti 首页"><img src="assets/logo.png" width="38" height="38" alt=""><span>kiti</span></a>
+    <nav aria-label="主导航"><a href="#features">功能</a><a href="#updates">版本与快捷键</a><a href="https://github.com/xiezhaoye/kiti">GitHub <span aria-hidden="true">↗</span></a><a class="nav-download" href="#download">下载</a></nav>
+  </div>
+</header>
+<main id="main">
+  <section class="hero wrap" data-screen-label="产品介绍">
+    <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> 为 macOS 原生打造 <span class="dot-divider">·</span> 免费 · MIT 开源</p>
+    <h1>选中它。<br><span><span class="hero-phrase">不用切换，</span><span class="hero-phrase">立刻就懂。</span></span></h1>
+    <p class="hero-description">一只住在菜单栏的小词典。在任何 App 里选中文字，浮层随即给出释义或译文；<br class="desktop-break">想看全部，点一下就进入主窗口。</p>
+    <div class="hero-actions"><a class="button primary" href="https://github.com/xiezhaoye/kiti/releases/download/v0.1.0/kiti-0.1.0-macos-arm64.zip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4"></path></svg>下载 macOS 版</a><a class="button secondary" href="https://github.com/xiezhaoye/kiti">在 GitHub 查看 <span aria-hidden="true">↗</span></a></div>
+    <p class="compatibility">v0.1.0 预览版 <span>·</span> macOS 13+ <span>·</span> Apple Silicon</p>
+    <figure class="hero-product">
+      <button class="screenshot-button" data-preview="assets/kiti-main.jpg" data-caption="kiti 主窗口：查词、查句、文档三个页签，按天分组的历史，以及词条详情" aria-label="放大查看 kiti 主窗口"><img class="product-image" src="assets/kiti-main.jpg" width="2000" height="1333" alt="kiti 主窗口：左侧查词、查句、文档页签与按天分组的历史，右侧是 rationale 的音标、释义、例句和相关词" fetchpriority="high"></button>
+      <figcaption>安静的原生界面。查过的词，按天留在左边。<span>点击查看大图 <span aria-hidden="true">↗</span></span></figcaption>
+    </figure>
+    <div class="capability-strip"><span>Swift 原生界面</span><span>本机系统词典</span><span>自带大模型接口</span><span>全局快捷键</span></div>
+  </section>
+  <section class="section wrap" id="features" data-screen-label="核心流程">
+    <div class="section-heading"><p class="eyebrow">小词典，完整的流程</p><h2>从看到，到看懂，<br>只要一次选中。</h2><p>该快的快，该准的准。单词不打扰网络，长句才请出大模型。</p></div>
+    <div class="workflow">
+      <article><span class="step">01</span><h3>选中，就弹出。</h3><p>在浏览器、PDF、聊天窗口里拖选文字、双击单词或按住 Shift 点击，浮层就出现在鼠标旁边，不抢走你当前的焦点。可以设置不取词的 App 黑名单。</p><div class="keyboard"><kbd>⌥</kbd><kbd>D</kbd><span>随时开关自动取词</span></div></article>
+      <article><span class="step">02</span><h3>词，查词典；句，找翻译。</h3><p>单词直接读取 macOS 自带的牛津英汉汉英词典，附柯林斯星级、CET、考研等标签，不调用大模型、不用联网。句子和段落则流式翻译，译文逐字出现。</p><p class="small-note">音标 · 美音 / 英音 · 词性 · 例句 · 相关词</p></article>
+      <article><span class="step">03</span><h3>想细看，点一下。</h3><p>点击浮层，主窗口打开并显示完整词条；浮层里的单词也能再双击继续查。查过的词、翻译过的文章，都按天记在左边，随时回看。</p><div class="keyboard"><kbd>⌥</kbd><kbd>Q</kbd><span>快速查询，回车直达主窗口</span></div></article>
+    </div>
+  </section>
+  <section class="editing-section" data-screen-label="取词浮层">
+    <div class="wrap editing-layout">
+      <div class="editing-copy"><p class="eyebrow">就在你读的地方</p><h2>一张浮层，<br>刚好够用。</h2><p>不必复制、不必切换窗口。释义、音标、发音和例句，都在浮层里；需要时再进入主窗口。</p><ul class="check-list"><li>美音 / 英音各自配音标和发音按钮</li><li>释义里的英文单词可继续双击查询</li><li>复制、在主窗口打开，一步到位</li><li>kiti 自己的窗口里也能这样取词</li></ul></div>
+      <figure class="annotation-figure"><button class="screenshot-button" data-preview="assets/kiti-popover.jpg" data-caption="kiti 取词浮层：auto 的音标、发音、释义与例句" aria-label="放大查看取词浮层"><img src="assets/kiti-popover.jpg" width="942" height="800" alt="kiti 取词浮层，显示 rationale 的音标、美音英音按钮、释义和例句" loading="lazy"></button><figcaption>取词浮层 · 释义、例句、发音，集中在一处</figcaption></figure>
+    </div>
+  </section>
+  <section class="section wrap everyday" data-screen-label="翻译与文档">
+    <div class="section-heading"><p class="eyebrow">不止查单词</p><h2>整句、整篇、整份文档，<br>一个输入框搞定。</h2></div>
+    <div class="feature-list">
+      <article><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 6h22v16H14l-6 5v-5H5zM11 12h10M11 16h6"></path></svg><div><h3>一个输入框，自动分流。</h3><p>输入单词就查词典，输入句子就翻译，拖入文件就开始翻译文档。中文和英文自动识别方向，需要时手动反向。</p></div></article>
+      <article><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 4h12l6 6v18H8zM20 4v6h6M12 16h10M12 21h10"></path></svg><div><h3>文档，分段并发翻译。</h3><p>支持 txt、md、docx、有文字层的 pdf、rtf 与 html。按段落并发翻译，显示进度，可取消、重译，译文自动缓存，导出为文本。</p></div></article>
+      <article><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 12v8h5l7 6V6l-7 6zM22 11a7 7 0 0 1 0 10M25 7a12 12 0 0 1 0 18"></path></svg><div><h3>读给你听。</h3><p>用系统语音朗读单词和译文，可选英文和中文声音，语速从 0.6× 到 1.4×。查词时美音与英音分别发音。</p></div></article>
+    </div>
+  </section>
+  <section class="editing-section" data-screen-label="翻译服务与隐私">
+    <div class="wrap editing-layout">
+      <div class="editing-copy"><p class="eyebrow">数据去哪里，自己决定</p><h2>用你自己的<br>翻译服务。</h2><p>kiti 不自带服务器，也不收集你的任何内容。</p><ul class="check-list"><li>单词查询完全在本机完成</li><li>句子与文档发送到你配置的接口：任意 OpenAI 兼容服务，或 Google、DeepL</li><li>API Key 存放在 macOS 钥匙串，可单独为大模型设置代理</li><li>历史保存在本机，可导出、导入，或指定同步文件夹在多台电脑间合并</li></ul></div>
+      <figure class="annotation-figure"><button class="screenshot-button" data-preview="assets/kiti-keys.jpg" data-caption="kiti 设置：通用、快捷键、大模型、翻译 API、朗读" aria-label="放大查看设置界面"><img src="assets/kiti-keys.jpg" width="1820" height="1560" alt="kiti 设置窗口，左侧通用、快捷键、大模型、翻译 API、朗读五个分类，右侧是快捷键设置" loading="lazy"></button><figcaption>设置 · 快捷键、服务、朗读、同步，都在左侧菜单里</figcaption></figure>
+    </div>
+  </section>
+  <section class="section wrap release-overview" id="updates" data-screen-label="当前版本与常用快捷键">
+    <div><p class="eyebrow">当前公开预览版 · 0.1.0</p><h2>版本与使用说明。</h2><ul class="release-points"><li>菜单栏常驻，任意 App 选中文字即可取词，首次使用需授予辅助功能权限。</li><li>主窗口三个页签：查词、查句、文档，历史按天分组并可恢复。</li><li>文档翻译、朗读、历史导入导出与同步文件夹。</li><li>界面大小可调，⌥＋ / ⌥－ 随时缩放。</li></ul><a class="release-detail" href="https://github.com/xiezhaoye/kiti/releases/tag/v0.1.0">查看 0.1.0 发布说明 ↗</a></div>
+    <div class="shortcut-panel"><h3>常用快捷键</h3><dl><div><dt>自动取词开关</dt><dd><kbd>⌥D</kbd></dd></div><div><dt>打开主窗口</dt><dd><kbd>⌥空格</kbd></dd></div><div><dt>快速查询</dt><dd><kbd>⌥Q</kbd></dd></div><div><dt>翻译剪贴板内容</dt><dd><kbd>⌥⇧T</kbd></dd></div><div><dt>朗读选中文字</dt><dd><kbd>⌥S</kbd></dd></div><div><dt>放大 / 缩小界面</dt><dd><kbd>⌥＋ / ⌥－</kbd></dd></div></dl><p>以上为默认快捷键，全局快捷键均可在设置中修改。</p></div>
+  </section>
+  <section class="section wrap faq-section" data-screen-label="常见问题"><div class="section-heading"><p class="eyebrow">开始之前</p><h2>你可能想知道。</h2></div><div class="faq">
+    <details><summary>kiti 免费吗？</summary><p>免费使用，并以 MIT 协议开源。你可以查看、修改和分发代码，条款见 <a href="https://github.com/xiezhaoye/kiti/blob/main/LICENSE">MIT License</a>。</p></details>
+    <details><summary>需要什么系统？首次如何打开？</summary><p>当前预览版支持 macOS 13 及以上的 Apple Silicon Mac。下载 ZIP 后解压，将 kiti.app 拖入“应用程序”。安装包尚未经 Apple 公证；如果系统提示无法验证开发者，可确认来源后在“系统设置 → 隐私与安全性”中选择“仍要打开”。</p></details>
+    <details><summary>为什么需要辅助功能权限？</summary><p>kiti 通过 macOS 辅助功能读取其他 App 里选中的文字；读不到时才模拟 ⌘C 并恢复你的剪贴板。请在“系统设置 → 隐私与安全性 → 辅助功能”（部分系统版本叫“设备控制和数据访问”）里允许 kiti，然后重新打开。菜单栏的“取词诊断…”会显示当前授权和最近几次取词的结果。</p></details>
+    <details><summary>需要联网或大模型吗？</summary><p>查单词不需要，直接使用本机的系统词典。翻译句子和文档需要一个翻译服务：任何 OpenAI 兼容接口（默认指向本机 127.0.0.1:3425），或者 Google、DeepL。接口地址、模型与 Key 都在设置里配置。</p></details>
+    <details><summary>我的文字会上传吗？</summary><p>单词查询不会离开你的电脑。翻译句子与文档时，文字只会发送到你自己配置的接口；API Key 存放在 macOS 钥匙串。kiti 没有自己的服务器，也不含统计和追踪脚本。</p></details>
+    <details><summary>支持扫描版 PDF 吗？</summary><p>暂不支持。没有文字层的扫描件会提示无法读取；带文字层的 PDF 可以正常翻译。</p></details>
+    <details><summary>关掉窗口后 kiti 去哪了？</summary><p>默认继续留在菜单栏，保持取词可用。可在设置 → 通用里选择“关闭主窗口时退出”，也可以打开“在 Dock 中显示”。</p></details>
+  </div></section>
+  <section class="download-section" id="download" data-screen-label="下载 kiti"><div class="wrap"><img src="assets/logo.png" width="76" height="76" alt="kiti" loading="lazy"><h2>下一个生词，<br>交给 kiti。</h2><p>给你的 Mac，添一只会查词的小鸟。</p><div class="hero-actions"><a class="button primary" href="https://github.com/xiezhaoye/kiti/releases/download/v0.1.0/kiti-0.1.0-macos-arm64.zip">下载 kiti 0.1.0 <span aria-hidden="true">↓</span></a><a class="button secondary" href="https://github.com/xiezhaoye/kiti">GitHub 项目 <span aria-hidden="true">↗</span></a></div><p class="compatibility">macOS 13+ · Apple Silicon · 免费开源</p><a class="release-notes" href="https://github.com/xiezhaoye/kiti/releases">查看版本与更新记录 <span aria-hidden="true">↗</span></a></div></section>
+</main>
+<footer class="wrap footer"><a class="brand" href="#"><img src="assets/logo.png" width="26" height="26" alt=""><span>kiti</span></a><p>由 <a href="https://www.xiezhaoye.site/">xiezhaoye</a> 开发。</p><nav aria-label="页脚导航"><a href="https://github.com/xiezhaoye/kiti">GitHub</a><a href="https://github.com/xiezhaoye/kiti/issues">反馈问题</a><a href="https://github.com/xiezhaoye/kiti/blob/main/LICENSE">MIT License</a></nav></footer>
+<dialog id="image-preview" aria-label="产品截图大图"><button class="preview-close" aria-label="关闭大图">关闭 <span aria-hidden="true">×</span></button><img alt=""><p></p></dialog>
+</body>
+</html>
