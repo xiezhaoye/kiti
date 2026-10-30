@@ -11,7 +11,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var syncTimer: Timer?
 
     func applicationDidFinishLaunching(_ n: Notification) {
-        item = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+        item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         let menu = NSMenu(); menu.delegate = self
         item.menu = menu
         refreshIcon()
@@ -42,7 +42,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             switch e.keyCode {
             case 24, 69: Task { @MainActor in ScaleSync.step(1) }; return nil
             case 27, 78: Task { @MainActor in ScaleSync.step(-1) }; return nil
-            case 29 where m == .option, 82 where m == .option: Task { @MainActor in AppSettings.shared.uiScale = 1.3 }; return nil
+            case 29 where m == .option, 82 where m == .option: Task { @MainActor in AppSettings.shared.uiScale = UIScale.standard }; return nil
             default: return e
             }
         }
@@ -113,16 +113,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func buildMainMenu() {
         let main = NSMenu()
-        main.addItem(sub("kiti", [
-            mi("关于 kiti", #selector(NSApplication.orderFrontStandardAboutPanel(_:)), target: NSApp),
+        main.addItem(sub("lingo", [
+            mi("关于 lingo", #selector(NSApplication.orderFrontStandardAboutPanel(_:)), target: NSApp),
             .separator(),
             mi("设置…", #selector(menuSettings), ","),
             .separator(),
-            mi("隐藏 kiti", #selector(NSApplication.hide(_:)), "h", target: NSApp),
+            mi("隐藏 lingo", #selector(NSApplication.hide(_:)), "h", target: NSApp),
             mi("隐藏其他", #selector(NSApplication.hideOtherApplications(_:)), "h", [.command, .option], target: NSApp),
             mi("全部显示", #selector(NSApplication.unhideAllApplications(_:)), target: NSApp),
             .separator(),
-            mi("退出 kiti", #selector(NSApplication.terminate(_:)), "q", target: NSApp),
+            mi("退出 lingo", #selector(NSApplication.terminate(_:)), "q", target: NSApp),
         ]))
         main.addItem(sub("文件", [
             mi("文档翻译…", #selector(menuDoc), "o"),
@@ -153,7 +153,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             mi("最小化", #selector(NSWindow.performMiniaturize(_:)), "m", chain: true),
             mi("缩放", #selector(NSWindow.performZoom(_:)), chain: true),
             .separator(),
-            mi("kiti 主窗口", #selector(menuMain), "0"),
+            mi("lingo 主窗口", #selector(menuMain), "0"),
         ]))
         NSApp.mainMenu = main
         NSApp.windowsMenu = main.items.last?.submenu
@@ -176,12 +176,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     func refreshIcon() {
         var img = Bundle.main.url(forResource: "menubar", withExtension: "png").flatMap { NSImage(contentsOf: $0) }
         if let i = img {
-            i.size = NSSize(width: 18, height: 18)
+            i.size = NSSize(width: 20, height: 12)
             if let big = Bundle.main.url(forResource: "menubar@2x", withExtension: "png"), let rep = NSBitmapImageRep(data: (try? Data(contentsOf: big)) ?? Data()) {
-                rep.size = NSSize(width: 18, height: 18); i.addRepresentation(rep)
+                rep.size = NSSize(width: 20, height: 12); i.addRepresentation(rep)
             }
         } else {
-            img = NSImage(systemSymbolName: s.autoPick ? "character.book.closed.fill" : "character.book.closed", accessibilityDescription: "kiti")
+            img = NSImage(systemSymbolName: s.autoPick ? "character.book.closed.fill" : "character.book.closed", accessibilityDescription: "lingo")
         }
         img?.isTemplate = true
         item.button?.image = img
@@ -210,7 +210,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     // MARK: menu
     func menuNeedsUpdate(_ menu: NSMenu) {
         menu.removeAllItems()
-        let head = NSMenuItem(title: "kiti", action: nil, keyEquivalent: ""); head.isEnabled = false
+        let head = NSMenuItem(title: "lingo", action: nil, keyEquivalent: ""); head.isEnabled = false
         menu.addItem(head)
         if !SelectionReader.trusted {
             let w = NSMenuItem(title: "⚠︎ 未授权辅助功能，取词不可用 — 点此打开设置", action: #selector(menuTrust), keyEquivalent: "")
@@ -226,7 +226,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         menu.addItem(.separator())
         let set = NSMenuItem(title: "设置…", action: #selector(menuSettings), keyEquivalent: ",")
         set.target = self; menu.addItem(set)
-        let q = NSMenuItem(title: "退出 kiti", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        let q = NSMenuItem(title: "退出 lingo", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
         menu.addItem(q)
     }
 
@@ -312,7 +312,7 @@ if CommandLine.arguments.count > 3, CommandLine.arguments[1] == "--snap" {
     let dark = CommandLine.arguments.count > 4 && CommandLine.arguments[4] == "dark"
     // Snapshot-only override in the volatile argument domain; never persist UI preferences.
     if let index = CommandLine.arguments.firstIndex(of: "--scale"), index + 1 < CommandLine.arguments.count,
-       let scale = Double(CommandLine.arguments[index + 1]), [0.78, 0.975, 1.17, 1.3, 1.495, 1.69, 1.95].contains(scale) {
+       let scale = Double(CommandLine.arguments[index + 1]), UIScale.steps.contains(scale) {
         UserDefaults.standard.setVolatileDomain(["uiScale": scale], forName: UserDefaults.argumentDomain)
     }
     MainActor.assumeIsolated {
@@ -322,6 +322,10 @@ if CommandLine.arguments.count > 3, CommandLine.arguments[1] == "--snap" {
         let k = CGFloat(AppSettings.shared.uiScale)
         var size = NSSize(width: 780 * k, height: 520 * k)
         switch kind {
+        case "dock-icon":
+            guard let image = Bundle.main.image(forResource: "dock-icon") ?? NSImage(contentsOfFile: "Resources/dock-icon.png") else { fatalError("Missing Dock artwork") }
+            view = TransparentDockIcon(image: image)
+            size = NSSize(width: 256, height: 256)
         case "popover", "poptrans", "poperror", "capsule":
             let m = PopoverController.shared.model
             m.kind = .word; m.text = "rationale"; m.entry = LocalDictionary.lookup("rationale")
@@ -367,7 +371,14 @@ if CommandLine.arguments.count > 3, CommandLine.arguments[1] == "--snap" {
             if kind == "trans-error" { MainModel.shared.tState = .failed("无法连接到翻译服务", "连接超时。请检查接口地址和网络后重试。") }
             view = NSHostingView(rootView: ScaleFill { MainView() })
         default:
-            MainModel.shared.mode = .dict; MainModel.shared.lookup("rationale")
+            let model = MainModel.shared
+            model.mode = .dict
+            if CommandLine.arguments.contains("--public-snapshot") {
+                // Public screenshots must never contain or write the user's real history.
+                let sampleDate = Date(timeIntervalSince1970: 1_767_225_600)
+                model.history = ["rationale", "curious", "clarity", "design"].map { HItem(w: $0, t: sampleDate) }
+            }
+            model.lookup("rationale", record: !CommandLine.arguments.contains("--public-snapshot"))
             view = NSHostingView(rootView: ScaleFill { MainView() })
         }
         if CommandLine.arguments.contains("--small"), !["popover", "poptrans", "poperror", "capsule", "llm", "api", "keys", "voice", "general"].contains(kind) {
@@ -375,6 +386,7 @@ if CommandLine.arguments.count > 3, CommandLine.arguments[1] == "--snap" {
         }
         let w = NSWindow(contentRect: NSRect(origin: .zero, size: size), styleMask: [.borderless], backing: .buffered, defer: false)
         w.appearance = NSApp.appearance
+        if kind == "dock-icon" { w.isOpaque = false; w.backgroundColor = .clear }
         w.contentView = view
         view.frame = NSRect(origin: .zero, size: size)
         view.layoutSubtreeIfNeeded()

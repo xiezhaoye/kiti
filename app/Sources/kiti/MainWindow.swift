@@ -404,10 +404,11 @@ enum MainWindow {
             let w = NSWindow(contentRect: NSRect(origin: .zero, size: size),
                              styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
                              backing: .buffered, defer: false)
-            w.title = "kiti"
+            w.title = "lingo"
             w.titlebarAppearsTransparent = true
             w.isMovableByWindowBackground = true
-            w.backgroundColor = NSColor(name: nil) { ap in ap.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua ? rgba(0x26272b) : rgba(0xf8f8fa) }
+            w.isOpaque = false
+            w.backgroundColor = .clear
             w.titleVisibility = .hidden
             // taller title band so the traffic lights sit on its centre line, level with the Kiti title
             let place: (Notification?) -> Void = { [weak w] _ in if let w = w { MainWindow.placeButtons(w) } }
@@ -435,12 +436,45 @@ enum MainWindow {
 // MARK: - views
 
 /// kiti lives in the menu bar; while one of its windows is open it also gets a Dock icon and a full menu bar.
+/// Draw the mark over a light grey rounded Dock tile.
+final class TransparentDockIcon: NSView {
+    let artwork: NSImage
+    init(image: NSImage) {
+        artwork = image
+        super.init(frame: NSRect(x: 0, y: 0, width: 128, height: 128))
+        autoresizingMask = [.width, .height]
+    }
+    required init?(coder: NSCoder) { nil }
+    override var isOpaque: Bool { false }
+    override func draw(_ dirtyRect: NSRect) {
+        NSColor.clear.setFill()
+        bounds.fill(using: .copy)
+        NSColor(calibratedWhite: 0.88, alpha: 1).setFill()
+        let tile = bounds.insetBy(dx: bounds.width * 0.06, dy: bounds.height * 0.06)
+        NSBezierPath(roundedRect: tile, xRadius: tile.width * 0.22, yRadius: tile.height * 0.22).fill()
+        let content = bounds.insetBy(dx: bounds.width * 0.09, dy: bounds.height * 0.09)
+        let factor = min(content.width / artwork.size.width, content.height / artwork.size.height)
+        let size = NSSize(width: artwork.size.width * factor, height: artwork.size.height * factor)
+        let rect = NSRect(x: bounds.midX - size.width / 2, y: bounds.midY - size.height / 2, width: size.width, height: size.height)
+        artwork.draw(in: rect, from: .zero, operation: .sourceOver, fraction: 1,
+                     respectFlipped: true, hints: [.interpolation: NSImageInterpolation.high])
+    }
+}
+
 @MainActor
 enum DockPresence {
     /// Dock icon only when the user asked for it (设置 → 通用); otherwise kiti stays a pure menu-bar app.
     static func apply() {
         let want: NSApplication.ActivationPolicy = AppSettings.shared.showInDock ? .regular : .accessory
         if NSApp.activationPolicy() != want { NSApp.setActivationPolicy(want) }
+        if let image = Bundle.main.image(forResource: "dock-icon") ?? NSImage(contentsOfFile: "Resources/dock-icon.png") {
+            // Keep a consistent grey background in the Dock.
+            NSApp.applicationIconImage = image
+            if !(NSApp.dockTile.contentView is TransparentDockIcon) {
+                NSApp.dockTile.contentView = TransparentDockIcon(image: image)
+            }
+            NSApp.dockTile.display()
+        }
     }
     static func windowOpened() { apply() }
 }
@@ -466,7 +500,7 @@ struct MainView: View {
                     case .trans: TransPane()
                     case .doc: DocPane()
                     }
-                }
+                }.frame(maxWidth: .infinity, maxHeight: .infinity).background(T.win)
                 Sep()
                 HStack(spacing: 8) {
                     Circle().fill(T.ok).frame(width: 5, height: 5)
@@ -475,10 +509,9 @@ struct MainView: View {
                     Spacer()
                     if m.mode == .doc { Text("译文会缓存，重翻同一段不再消耗额度").font(.system(size: 10)).foregroundStyle(T.fg2) }
                 }
-                .padding(.horizontal, 16).frame(height: T.footerHeight)
+                .padding(.horizontal, 16).frame(height: T.footerHeight).background(T.win)
             }
         }
-        .background(T.win)
         .foregroundStyle(T.fg)
         .frame(minWidth: 640, minHeight: 420)
         .ignoresSafeArea()
@@ -515,8 +548,7 @@ struct SideColumn: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            HStack { Text("Kiti").font(.system(size: 28, weight: .bold, design: .rounded)).foregroundStyle(T.fg); Spacer() }
-                .padding(.leading, 92 / k).padding(.trailing, 16).frame(height: 56 / k)
+            Color.clear.frame(height: 56 / k).accessibilityHidden(true)
             KSeg(height: 30, items: [(MainMode.dict, "查词"), (.trans, "查句"), (.doc, "文档")], sel: $m.mode)
                 .padding(.bottom, 16)
             ScrollView {
@@ -527,11 +559,11 @@ struct SideColumn: View {
                         Button { if open { collapsed.insert(tag) } else { collapsed.remove(tag) } } label: {
                             HStack(spacing: 5) {
                                 Image(systemName: open ? "chevron.down" : "chevron.right").font(.system(size: 8, weight: .bold)).frame(width: 8)
-                                Text(day.title).font(.system(size: 11, weight: .semibold))
+                                Text(day.title).font(.system(size: 11, weight: .medium))
                                 Spacer(minLength: 4)
                                 Text("\(day.rows.count)").font(.system(size: 11)).monospacedDigit()
                             }
-                            .foregroundStyle(T.fg3).padding(.horizontal, 9).padding(.top, 8).padding(.bottom, 4).contentShape(Rectangle())
+                            .foregroundStyle(T.chromeText).padding(.horizontal, 9).padding(.top, 8).padding(.bottom, 4).contentShape(Rectangle())
                         }.buttonStyle(.plain)
                         if open {
                             ForEach(day.rows) { r in
@@ -539,7 +571,7 @@ struct SideColumn: View {
                                     HStack(spacing: 8) {
                                         Text(r.title).font(.system(size: 13, weight: r.selected ? .medium : .regular)).foregroundStyle(r.selected ? T.accent : T.fg).lineLimit(1)
                                         Spacer(minLength: 4)
-                                        Text(r.time).font(.system(size: 10)).foregroundStyle(r.selected ? T.accent : T.fg3).monospacedDigit()
+                                        Text(r.time).font(.system(size: 10)).foregroundStyle(r.selected ? T.accent : T.chromeText).monospacedDigit()
                                     }
                                     .padding(.horizontal, 10).padding(.vertical, 7)
                                     .background(r.selected ? T.fill2 : .clear, in: RoundedRectangle(cornerRadius: 6, style: .continuous))
@@ -558,13 +590,13 @@ struct SideColumn: View {
             Sep()
             HStack {
                 Text(m.mode == .dict ? "最近 \(m.history.count) 词" : m.mode == .trans ? "最近 \(m.articles.count)/\(HistoryStore.capArticles) 篇" : "最近 \(m.docs.count)/\(HistoryStore.capDocs) 份")
-                    .font(.system(size: 11)).foregroundStyle(T.fg3)
+                    .font(.system(size: 11)).foregroundStyle(T.chromeText)
                 Spacer()
                 IconButton(symbol: "gearshape", tip: "设置") { SettingsWindow.show() }
             }
             .padding(.leading, 12).padding(.trailing, 6).frame(height: T.footerHeight)
         }
-        .frame(width: 200).background(T.side)
+        .frame(width: 200).background(GlassSurface(material: .sidebar))
     }
 }
 
@@ -588,11 +620,13 @@ struct InputBar: View {
                 }
             }
             .padding(.horizontal, 11).padding(.vertical, 9)
-            .background(T.field, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-            .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).strokeBorder(T.sep, lineWidth: 0.7))
+            .background(T.chromeField, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .overlay(RoundedRectangle(cornerRadius: 10, style: .continuous).strokeBorder(T.glassRim, lineWidth: 0.7))
+            .shadow(color: .black.opacity(0.025), radius: 3, y: 1)
         }
         .padding(.leading, 10).padding(.trailing, 16).padding(.top, 16).padding(.bottom, 15)
         .frame(minHeight: 52, alignment: .top)
+        .background(GlassSurface(material: .headerView))
     }
 }
 

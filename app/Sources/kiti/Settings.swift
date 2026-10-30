@@ -154,8 +154,23 @@ final class AppSettings: ObservableObject {
         llmPrompt = d.string(forKey: "llmPrompt") ?? ""
         llmTemp = d.object(forKey: "llmTemp") as? Double ?? 0.2
         llmProxy = d.bool(forKey: "llmProxy")
-        let us = d.object(forKey: "uiScale") as? Double ?? 1.3
-        uiScale = [0.78, 0.975, 1.17, 1.3, 1.495, 1.69, 1.95].min { abs($0 - us) < abs($1 - us) } ?? 1.3
+        // Revision 3: displayed 100% is 90% of the original 1.3 baseline.
+        // Snapshot argument overrides never migrate persisted preferences.
+        let scaleOverride = d.volatileDomain(forName: UserDefaults.argumentDomain)["uiScale"] != nil
+        if scaleOverride {
+            uiScale = UIScale.nearest(d.object(forKey: "uiScale") as? Double ?? UIScale.standard)
+        } else {
+            let revision = d.integer(forKey: "uiScaleBaselineRevision")
+            let previousDefault = revision < 2 ? 1.3 : (revision < 3 ? 1.04 : UIScale.standard)
+            let saved = d.object(forKey: "uiScale") as? Double ?? previousDefault
+            let corrected = revision < 2 ? saved * 0.9 : (revision < 3 ? saved * (0.9 / 0.8) : saved)
+            let scale = UIScale.nearest(corrected)
+            uiScale = scale
+            if revision < 3 {
+                d.set(scale, forKey: "uiScale")
+                d.set(3, forKey: "uiScaleBaselineRevision")
+            }
+        }
         let sr = d.object(forKey: "speechRate") as? Double ?? 1.0
         speechRate = [0.6, 0.8, 1.0, 1.2, 1.4].min { abs($0 - sr) < abs($1 - sr) } ?? 1.0
         blacklist = d.string(forKey: "blacklist") ?? "com.apple.Terminal\ncom.googlecode.iterm2"

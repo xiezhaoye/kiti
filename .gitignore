@@ -4,3 +4,11 @@ app/.build/
 app/build/
 landing/dist/
 .claude/
+
+# Local UI regression captures may contain real history; publish demo shots in landing/assets instead.
+/designs/kiti-ui-review/implementation/branding/
+/designs/kiti-ui-review/implementation/dock90/
+/designs/lingo-glass-review/implementation/**/*.png
+/designs/lingo-glass-review/implementation/**/*.jpg
+/scripts/product-shots/build.log
+/designs/lingo-glass-review/implementation/build.log

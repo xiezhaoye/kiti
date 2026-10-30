@@ -92,7 +92,7 @@ final class HistoryStore {
         let p = NSOpenPanel()
         p.allowedContentTypes = [.json]
         guard p.runModal() == .OK, let u = p.url else { return }
-        guard let d = try? Data(contentsOf: u), let h = try? Self.decoder.decode(HistoryData.self, from: d) else { HUD.show("这不是 kiti 的历史记录文件"); return }
+        guard let d = try? Data(contentsOf: u), let h = try? Self.decoder.decode(HistoryData.self, from: d) else { HUD.show("这不是 lingo 的历史记录文件"); return }
         merge(h)
         HUD.show("已导入 \(h.words.count) 个词、\(h.articles.count) 篇、\(h.docs.count) 份文档")
     }

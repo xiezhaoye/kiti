@@ -1,13 +1,13 @@
 #!/bin/bash
-# Build and package kiti into build/kiti.dmg (drag-to-Applications layout)
+# Build and package lingo into build/lingo.dmg (drag-to-Applications layout)
 set -euo pipefail
 cd "$(dirname "$0")"
-./build.sh
+LINGO_SKIP_INSTALL=1 ./build.sh
 STAGE=build/dmg
-rm -rf "$STAGE" build/kiti.dmg
+rm -rf "$STAGE" build/lingo.dmg
 mkdir -p "$STAGE"
-cp -R build/kiti.app "$STAGE/kiti.app"
+cp -R build/lingo.app "$STAGE/lingo.app"
 ln -s /Applications "$STAGE/Applications"
-hdiutil create -volname kiti -srcfolder "$STAGE" -ov -format UDZO build/kiti.dmg >/dev/null
+hdiutil create -volname lingo -srcfolder "$STAGE" -ov -format UDZO build/lingo.dmg >/dev/null
 rm -rf "$STAGE"
-echo "Packaged build/kiti.dmg"
+echo "Packaged build/lingo.dmg"

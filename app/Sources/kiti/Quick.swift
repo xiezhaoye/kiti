@@ -14,7 +14,7 @@ private struct QuickView: View {
     var body: some View {
         HStack(spacing: 10) {
             Image(systemName: "magnifyingglass").font(.system(size: 17)).foregroundStyle(T.fg2)
-            TextField("kiti，查询，翻译一句话", text: $text)
+            TextField("lingo，查询，翻译一句话", text: $text)
                 .textFieldStyle(.plain).font(.system(size: 18)).focused($focused)
                 .onSubmit { QuickQuery.commit(text) }
         }
@@ -70,12 +70,21 @@ enum QuickQuery {
     }
 }
 
+/// Shared display-scale vocabulary. New 100% is 90% of the original 1.3 baseline.
+enum UIScale {
+    static let standard: Double = 1.17
+    static let steps: [Double] = [0.702, 0.8775, 1.053, 1.17, 1.3455, 1.521, 1.755]
+    static let labels: [(Double, String)] = [(0.702, "60%"), (0.8775, "75%"), (1.053, "90%"), (1.17, "100%（默认）"), (1.3455, "115%"), (1.521, "130%"), (1.755, "150%")]
+    static func nearest(_ value: Double) -> Double {
+        steps.min { abs($0 - value) < abs($1 - value) } ?? standard
+    }
+}
+
 /// Keeps a window's size in step with `uiScale` (settings change or ⌥+/⌥−).
 @MainActor
 enum ScaleSync {
-    /// uiScale is stored in design units; 1.3 is what the UI was designed at and is shown as "100%".
-    static let steps: [Double] = [0.78, 0.975, 1.17, 1.3, 1.495, 1.69, 1.95]
-    static let labels: [(Double, String)] = [(0.78, "60%"), (0.975, "75%"), (1.17, "90%"), (1.3, "100%（默认）"), (1.495, "115%"), (1.69, "130%"), (1.95, "150%")]
+    static let steps = UIScale.steps
+    static let labels = UIScale.labels
     private static var bag: [ObjectIdentifier: [Any]] = [:]
 
     static func step(_ dir: Int) {

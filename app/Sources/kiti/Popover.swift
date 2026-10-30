@@ -282,7 +282,7 @@ struct PopoverView: View {
     @ObservedObject var model: PopoverModel
     let ctl: PopoverController
 
-    var radius: CGFloat { model.kind == .capsule ? 15 : 14 }
+    var radius: CGFloat { model.kind == .capsule ? 15 : 16 }
 
     var body: some View {
         Group {
@@ -292,9 +292,7 @@ struct PopoverView: View {
             case .translate: translate
             }
         }
-        .background(ZStack { VisualEffect(); T.glass.opacity(0.35) })
-        .clipShape(RoundedRectangle(cornerRadius: radius, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: radius, style: .continuous).strokeBorder(T.sep, lineWidth: 0.5))
+        .modifier(FloatingGlass(radius: radius))
         .padding(1)
     }
 
@@ -302,7 +300,7 @@ struct PopoverView: View {
         Button { ctl.startTranslate() } label: {
             HStack(spacing: 7) {
                 Bird().frame(height: 19)
-                Text("kiti翻译").font(.system(size: 13, weight: .medium)).foregroundStyle(T.fg)
+                Text("lingo 翻译").font(.system(size: 13, weight: .medium)).foregroundStyle(T.fg)
             }
             .padding(.leading, 11).padding(.trailing, 14).frame(height: 30)
         }
@@ -437,18 +435,24 @@ struct IconButton: View {
 struct Bird: View {
     var body: some View {
         if let img = Bundle.main.image(forResource: "logo-bird") ?? NSImage(contentsOfFile: "Resources/logo-bird.png") {
-            Image(nsImage: img).resizable().aspectRatio(contentMode: .fit)
+            Image(nsImage: img).renderingMode(.template).resizable().aspectRatio(contentMode: .fit).foregroundStyle(T.fg)
         } else { Image(systemName: "character.book.closed") }
     }
 }
 
-/// Bird + "kiti" wordmark shown at the lower left of the popovers.
+/// Brand icon shown at the lower left of the popovers.
 struct KitiMark: View {
     var body: some View {
-        HStack(spacing: 5) {
-            Bird().frame(height: 16)
-            Text("kiti").font(.system(size: 12, weight: .semibold)).foregroundStyle(T.fg2)
-        }
+        Bird().frame(height: 16).accessibilityLabel("lingo")
+    }
+}
+
+/// User-provided transparent brand art, shared with the Dock icon source.
+struct DockLogo: View {
+    var body: some View {
+        if let img = Bundle.main.image(forResource: "dock-icon") ?? NSImage(contentsOfFile: "Resources/dock-icon.png") {
+            Image(nsImage: img).renderingMode(.template).resizable().aspectRatio(contentMode: .fit).foregroundStyle(T.fg)
+        } else { Bird() }
     }
 }
 
@@ -467,7 +471,11 @@ struct VisualEffect: NSViewRepresentable {
         v.material = material; v.blendingMode = .behindWindow; v.state = .active
         return v
     }
-    func updateNSView(_ v: NSVisualEffectView, context: Context) {}
+    func updateNSView(_ v: NSVisualEffectView, context: Context) {
+        v.material = material
+        v.blendingMode = .behindWindow
+        v.state = .active
+    }
 }
 
 // MARK: - HUD toast

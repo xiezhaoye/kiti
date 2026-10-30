@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://kiti.xiezhaoye.site/sitemap.xml
+Sitemap: https://lingo.xiezhaoye.site/sitemap.xml

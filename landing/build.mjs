@@ -4,7 +4,7 @@ import { join } from "node:path";
 const root = import.meta.dirname;
 const dist = join(root, "dist");
 const html = readFileSync(join(root, "index.html"), "utf8");
-for (const required of ["assets/logo.png", "assets/kiti-main.jpg", "assets/kiti-popover.jpg", "https://github.com/xiezhaoye/kiti"]) {
+for (const required of ["assets/logo.png", "assets/lingo-main.jpg", "assets/lingo-popover.jpg", "assets/lingo-article.jpg", "assets/lingo-sentence.jpg", "assets/lingo-keys.jpg", "assets/lingo-llm.jpg", "assets/lingo-api.jpg", "lingo-0.1.2-macos-arm64.zip", "https://github.com/xiezhaoye/lingo"]) {
   if (!html.includes(required)) throw new Error(`Missing page asset or project link: ${required}`);
 }
 rmSync(dist, { recursive: true, force: true });
@@ -24,4 +24,4 @@ for (const file of ["style.css", "site.js"]) {
   output = output.replace(`"${file}"`, `"${versioned}"`);
 }
 writeFileSync(join(dist, "index.html"), output);
-console.log("Built kiti landing/dist");
+console.log("Built lingo landing/dist");

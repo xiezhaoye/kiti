@@ -1,7 +1,7 @@
 import AppKit
 import SwiftUI
 
-/// Approved UI tokens from designs/kiti-ui-review (light + dark, specified at 1×).
+/// Approved UI tokens from designs/lingo-glass-review (light + dark, specified at 1×).
 func rgba(_ hex: UInt32, _ a: CGFloat = 1) -> NSColor {
     NSColor(srgbRed: CGFloat((hex >> 16) & 0xff) / 255, green: CGFloat((hex >> 8) & 0xff) / 255, blue: CGFloat(hex & 0xff) / 255, alpha: a)
 }
@@ -17,17 +17,17 @@ extension Color {
 enum T {
     static let footerHeight: CGFloat = 32
 
-    static let win = Color(light: rgba(0xfbfcfe), dark: rgba(0x242931))
-    static let win2 = Color(light: rgba(0xeff2f7), dark: rgba(0x292f39))
-    static let side = Color(light: rgba(0xeff2f7), dark: rgba(0x20252d))
-    static let fg = Color(light: rgba(0x222b38), dark: rgba(0xe8edf5))
-    static let fg2 = Color(light: rgba(0x687486), dark: rgba(0xa7b1c1))
-    static let fg3 = Color(light: rgba(0x7b8796), dark: rgba(0x949fb0))
-    static let sep = Color(light: rgba(0xdce2eb), dark: rgba(0x3b4350))
-    static let fill = Color(light: rgba(0xe9edf3), dark: rgba(0x323a47))
-    static let fill2 = Color(light: rgba(0xdfe9f7), dark: rgba(0x334763))
-    static let field = Color(light: rgba(0xffffff), dark: rgba(0x292f39))
-    static let accent = Color(light: rgba(0x315f9c), dark: rgba(0x9dbfee))
+    static let win = Color(light: rgba(0xfcfdfd), dark: rgba(0x252d34))
+    static let win2 = Color(light: rgba(0xf0f4f5), dark: rgba(0x2c353d))
+    static let side = Color(light: rgba(0xf0f4f5), dark: rgba(0x29343c))
+    static let fg = Color(light: rgba(0x27333d), dark: rgba(0xeef2f4))
+    static let fg2 = Color(light: rgba(0x5d6a74), dark: rgba(0xb1bdc7))
+    static let fg3 = Color(light: rgba(0x6e7b85), dark: rgba(0x9baab5))
+    static let sep = Color(light: rgba(0xdce2eb), dark: rgba(0x424d56))
+    static let fill = Color(light: rgba(0xe9eef2), dark: rgba(0x333e47))
+    static let fill2 = Color(light: rgba(0xd6e3ef), dark: rgba(0x374e65))
+    static let field = Color(light: rgba(0xffffff), dark: rgba(0x2c353d))
+    static let accent = Color(light: rgba(0x2d568b), dark: rgba(0xa8c9ef))
     static let accentFg = Color(light: rgba(0xffffff), dark: rgba(0x172a43))
     static let amberInk = Color(light: rgba(0x8a5200), dark: rgba(0xf7b94a))
     static let amberSoft = Color(light: rgba(0xf59e0b, 0.17), dark: rgba(0xf59e0b, 0.2))
@@ -37,7 +37,48 @@ enum T {
     static let warnSoft = Color(light: rgba(0xf59e0b, 0.16), dark: rgba(0xf59e0b, 0.17))
     static let bad = Color(light: rgba(0xc43a32), dark: rgba(0xff7a70))
     static let badSoft = Color(light: rgba(0xc43a32, 0.11), dark: rgba(0xff7a70, 0.14))
-    static let glass = Color(light: rgba(0xfafbfd, 0.74), dark: rgba(0x2c2e34, 0.74))
+    static let glass = Color(light: rgba(0xf1f7f9, 0.56), dark: rgba(0x25323d, 0.56))
+    static let floatingTint = Color(light: rgba(0xf1f7f9, 0.70), dark: rgba(0x25323d, 0.74))
+    static let glassRim = Color(light: rgba(0xffffff, 0.72), dark: rgba(0xd8e8f2, 0.18))
+    static let chromeField = Color(light: rgba(0xffffff, 0.66), dark: rgba(0x36424c, 0.74))
+    static let segmentTrack = Color(light: rgba(0xdfe2e5), dark: rgba(0x303438))
+    static let segmentSelection = Color(light: rgba(0xf5f5f5), dark: rgba(0x505458))
+    static let chromeText = Color(light: rgba(0x465a65), dark: rgba(0xc1cfd8))
+}
+
+/// Behind-window material for chrome; long reading surfaces stay opaque.
+struct GlassSurface: View {
+    var material: NSVisualEffectView.Material = .sidebar
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    var body: some View {
+        Group {
+            if reduceTransparency { T.side }
+            else {
+                ZStack {
+                    VisualEffect(material: material)
+                    T.glass.opacity(0.32)
+                }
+            }
+        }.allowsHitTesting(false).accessibilityHidden(true)
+    }
+}
+
+/// Preserve selectable NSTextViews while applying the system floating material.
+struct FloatingGlass: ViewModifier {
+    var radius: CGFloat = 16
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    func body(content: Content) -> some View {
+        let shape = RoundedRectangle(cornerRadius: radius, style: .continuous)
+        if reduceTransparency {
+            content.background(T.win, in: shape)
+                .overlay(shape.strokeBorder(T.sep, lineWidth: 0.5))
+        } else if #available(macOS 26.0, *) {
+            content.background(T.floatingTint, in: shape).glassEffect(.regular, in: shape)
+        } else {
+            content.background(GlassSurface(material: .popover)).clipShape(shape)
+                .overlay(shape.strokeBorder(T.glassRim, lineWidth: 0.7))
+        }
+    }
 }
 
 extension Color { init(_ ns: NSColor) { self.init(nsColor: ns) } }
@@ -50,8 +91,9 @@ struct FillPill: ViewModifier {
 }
 
 struct PressStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label.scaleEffect(configuration.isPressed ? 0.97 : 1).animation(.easeOut(duration: 0.12), value: configuration.isPressed)
+        configuration.label.scaleEffect(configuration.isPressed && !reduceMotion ? 0.97 : 1).animation(reduceMotion ? nil : .easeOut(duration: 0.12), value: configuration.isPressed)
     }
 }
 
@@ -73,11 +115,13 @@ struct KBtn: View {
     }
 }
 
-/// Segmented control drawn like the design's `.seg`.
+/// Neutral segmented tabs with the same sliding highlight as Hoot's sidebar.
 struct KSeg<V: Hashable>: View {
     var height: CGFloat = 22
     let items: [(V, String)]
     @Binding var sel: V
+    @Namespace private var highlight
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     var body: some View {
         HStack(spacing: 2) {
             ForEach(Array(items.enumerated()), id: \.offset) { _, it in
@@ -85,12 +129,23 @@ struct KSeg<V: Hashable>: View {
                     Text(it.1).font(.system(size: 13, weight: sel == it.0 ? .medium : .regular))
                         .foregroundStyle(sel == it.0 ? T.fg : T.fg2)
                         .padding(.horizontal, 12).frame(height: height)
-                        .background(sel == it.0 ? T.field : .clear, in: RoundedRectangle(cornerRadius: 5, style: .continuous))
-                        .shadow(color: sel == it.0 ? .black.opacity(0.18) : .clear, radius: 1.5, y: 0.5)
-                }.buttonStyle(.plain)
+                        .contentShape(Rectangle())
+                        .background {
+                            if sel == it.0 {
+                                RoundedRectangle(cornerRadius: 5, style: .continuous)
+                                    .fill(T.segmentSelection)
+                                    .shadow(color: .black.opacity(0.10), radius: 1.5, y: 0.5)
+                                    .matchedGeometryEffect(id: "selection", in: highlight)
+                            }
+                        }
+                }
+                .buttonStyle(.plain).focusable(false)
+                .accessibilityLabel(it.1)
+                .accessibilityAddTraits(sel == it.0 ? .isSelected : [])
             }
         }
-        .padding(2).background(T.fill, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+        .padding(2).background(T.segmentTrack, in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: sel)
     }
 }
 
@@ -114,7 +169,7 @@ struct Kbd: View {
     }
 }
 
-/// The design is specified in CSS px and meant to be viewed at roughly 1.3x; `uiScale` applies that to every kiti surface.
+/// uiScale applies to every surface; the shared UIScale standard defines displayed 100%.
 struct ScaleFill<C: View>: View {
     @ObservedObject var s = AppSettings.shared
     @ViewBuilder let content: () -> C

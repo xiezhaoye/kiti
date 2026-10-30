@@ -1,21 +1,21 @@
 <!doctype html>
-<!-- Context: kiti, a macOS menu-bar dictionary and translator. Direction: same light Apple-inspired product page as Hoot, real offscreen renders of the native UI. No external fonts, trackers or runtime dependencies. -->
+<!-- Context: lingo, a macOS menu-bar dictionary and translator. Direction: same light Apple-inspired product page as Hoot, real native-window captures with isolated demo data. No external fonts, trackers or runtime dependencies. -->
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#f5f5f7">
-  <title>kiti — 选中就懂，住在菜单栏的 Mac 词典与翻译</title>
-  <meta name="description" content="kiti 是一款免费的 macOS 菜单栏词典与翻译 App。在任何 App 里选中文字，浮层立即给出释义或译文；单词走本机系统词典，句子与整篇文档交给你自己的大模型，以 MIT 协议开源。">
-  <link rel="canonical" href="https://kiti.xiezhaoye.site/">
-  <link rel="icon" type="image/png" href="assets/logo.png">
-  <link rel="apple-touch-icon" href="assets/logo.png">
+  <title>lingo — 选中就懂，住在菜单栏的 Mac 词典与翻译</title>
+  <meta name="description" content="lingo 是一款免费的 macOS 菜单栏词典与翻译 App。在任何 App 里选中文字，浮层立即给出释义或译文；单词走本机系统词典，句子与整篇文档交给你配置的翻译 API 或大模型，以 MIT 协议开源。">
+  <link rel="canonical" href="https://lingo.xiezhaoye.site/">
+  <link rel="icon" type="image/png" href="assets/logo.png?v=20261030">
+  <link rel="apple-touch-icon" href="assets/logo.png?v=20261030">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="zh_CN">
-  <meta property="og:title" content="kiti — 选中就懂，住在菜单栏的 Mac 词典与翻译">
+  <meta property="og:title" content="lingo — 选中就懂，住在菜单栏的 Mac 词典与翻译">
   <meta property="og:description" content="任何 App 里选中文字，浮层即刻出释义或译文。免费使用，MIT 开源。">
-  <meta property="og:url" content="https://kiti.xiezhaoye.site/">
-  <meta property="og:image" content="https://kiti.xiezhaoye.site/assets/kiti-main.jpg">
+  <meta property="og:url" content="https://lingo.xiezhaoye.site/">
+  <meta property="og:image" content="https://lingo.xiezhaoye.site/assets/lingo-main.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="style.css">
   <script src="site.js" defer></script>
@@ -24,67 +24,77 @@
 <a class="skip" href="#main">跳转到正文</a>
 <header class="nav">
   <div class="nav-inner">
-    <a class="brand" href="#" aria-label="kiti 首页"><img src="assets/logo.png" width="38" height="38" alt=""><span>kiti</span></a>
-    <nav aria-label="主导航"><a href="#features">功能</a><a href="#updates">版本与快捷键</a><a href="https://github.com/xiezhaoye/kiti">GitHub <span aria-hidden="true">↗</span></a><a class="nav-download" href="#download">下载</a></nav>
+    <a class="brand" href="#" aria-label="lingo 首页"><img class="brand-wordmark" src="assets/brand.svg" width="140" height="44" alt="lingo"></a>
+    <nav aria-label="主导航"><a href="#features">功能</a><a href="#updates">版本与快捷键</a><a href="https://github.com/xiezhaoye/lingo">GitHub <span aria-hidden="true">↗</span></a><a class="nav-download" href="https://www.xiezhaoye.site/">全部项目</a></nav>
   </div>
 </header>
 <main id="main">
   <section class="hero wrap" data-screen-label="产品介绍">
     <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> 为 macOS 原生打造 <span class="dot-divider">·</span> 免费 · MIT 开源</p>
     <h1>选中它。<br><span><span class="hero-phrase">不用切换，</span><span class="hero-phrase">立刻就懂。</span></span></h1>
-    <p class="hero-description">一只住在菜单栏的小词典。在任何 App 里选中文字，浮层随即给出释义或译文；<br class="desktop-break">想看全部，点一下就进入主窗口。</p>
-    <div class="hero-actions"><a class="button primary" href="https://kiti-dl.xiezhaoye.site/kiti-0.1.1-macos-arm64.zip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4"></path></svg>下载 macOS 版</a><a class="button secondary" href="https://github.com/xiezhaoye/kiti">在 GitHub 查看 <span aria-hidden="true">↗</span></a></div>
-    <p class="compatibility">v0.1.1 预览版 <span>·</span> macOS 13+ <span>·</span> Apple Silicon</p>
+    <p class="hero-description">本机词典，选中就查。整句与文章，交给你配置的翻译 API 或大模型。<br class="desktop-break">原生 Swift 小工具，约 1.4 MB 下载，安静地住在菜单栏。</p>
+    <div class="hero-actions"><a class="button primary" href="https://kiti-dl.xiezhaoye.site/lingo-0.1.2-macos-arm64.zip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4"></path></svg>下载 lingo</a><a class="button secondary" href="https://github.com/xiezhaoye/lingo">在 GitHub 查看 <span aria-hidden="true">↗</span></a></div>
+    <p class="compatibility">v0.1.2 预览版 <span>·</span> ZIP 约 1.4 MB <span>·</span> macOS 13+ <span>·</span> Apple Silicon</p>
     <figure class="hero-product">
-      <button class="screenshot-button" data-preview="assets/kiti-main.jpg" data-caption="kiti 主窗口：查词、查句、文档三个页签，按天分组的历史，以及词条详情" aria-label="放大查看 kiti 主窗口"><img class="product-image" src="assets/kiti-main.jpg" width="2000" height="1333" alt="kiti 主窗口：左侧查词、查句、文档页签与按天分组的历史，右侧是 rationale 的音标、释义、例句和相关词" fetchpriority="high"></button>
+      <button class="screenshot-button" data-preview="assets/lingo-main.jpg" data-caption="lingo 主窗口：查词、查句、文档三个页签，按天分组的历史，以及词条详情" aria-label="放大查看 lingo 主窗口"><img class="product-image" src="assets/lingo-main.jpg" width="1990" height="1334" alt="lingo 主窗口：左侧查词、查句、文档页签与按天分组的历史，右侧是 rationale 的音标、释义、例句和相关词" fetchpriority="high"></button>
       <figcaption>安静的原生界面。查过的词，按天留在左边。<span>点击查看大图 <span aria-hidden="true">↗</span></span></figcaption>
     </figure>
-    <div class="capability-strip"><span>Swift 原生界面</span><span>本机系统词典</span><span>自带大模型接口</span><span>全局快捷键</span></div>
+    <div class="capability-strip"><span>Swift 原生界面</span><span>本机系统词典</span><span>自选翻译 API / 大模型</span><span>全局快捷键</span></div>
   </section>
-  <section class="section wrap" id="features" data-screen-label="核心流程">
-    <div class="section-heading"><p class="eyebrow">小词典，完整的流程</p><h2>从看到，到看懂，<br>只要一次选中。</h2><p>该快的快，该准的准。单词不打扰网络，长句才请出大模型。</p></div>
+  <section class="section wrap" id="features" data-screen-label="三个产品特点">
+    <div class="section-heading"><p class="eyebrow">专注阅读时，它刚好在</p><h2>单词快查，长文慢读。<br>用一个轻量工具完成。</h2></div>
     <div class="workflow">
-      <article><span class="step">01</span><h3>选中，就弹出。</h3><p>在浏览器、PDF、聊天窗口里拖选文字、双击单词或按住 Shift 点击，浮层就出现在鼠标旁边，不抢走你当前的焦点。可以设置不取词的 App 黑名单。</p><div class="keyboard"><kbd>⌥</kbd><kbd>D</kbd><span>随时开关自动取词</span></div></article>
-      <article><span class="step">02</span><h3>词，查词典；句，找翻译。</h3><p>单词直接读取 macOS 自带的牛津英汉汉英词典，附柯林斯星级、CET、考研等标签，不调用大模型、不用联网。句子和段落则流式翻译，译文逐字出现。</p><p class="small-note">音标 · 美音 / 英音 · 词性 · 例句 · 相关词</p></article>
-      <article><span class="step">03</span><h3>想细看，点一下。</h3><p>点击浮层，主窗口打开并显示完整词条；浮层里的单词也能再双击继续查。查过的词、翻译过的文章，都按天记在左边，随时回看。</p><div class="keyboard"><kbd>⌥</kbd><kbd>Q</kbd><span>快速查询，回车直达主窗口</span></div></article>
+      <article><span class="step">本地查词</span><h3>本机词典，选中就查。</h3><p>直接读取 macOS 系统词典，无需联网，不消耗大模型额度。浮层不抢焦点，全局快捷键随时开关取词或开始查询。</p><div class="keyboard"><kbd>⌥</kbd><kbd>Q</kbd><span>全局快速查询</span></div></article>
+      <article><span class="step">自选服务</span><h3>整句、文章，都能翻译。</h3><p>填写翻译 API 或大模型的接口地址、Key 和模型。支持 OpenAI 兼容接口、Google 翻译与 DeepL，大模型译文可流式出现。</p><p class="small-note">Key 保存在 macOS 钥匙串</p></article>
+      <article><span class="step">原生轻量</span><h3>下载小，安静待命。</h3><p>ZIP 约 1.4 MB，应用约 4.7 MB。SwiftUI 与 AppKit 原生运行，没有 Electron 或第三方运行时，默认留在菜单栏。</p><p class="small-note">不内置模型；本地查词不发网络请求</p></article>
     </div>
   </section>
-  <section class="editing-section" data-screen-label="取词浮层">
-    <div class="wrap editing-layout">
-      <div class="editing-copy"><p class="eyebrow">就在你读的地方</p><h2>一张浮层，<br>刚好够用。</h2><p>不必复制、不必切换窗口。释义、音标、发音和例句，都在浮层里；需要时再进入主窗口。</p><ul class="check-list"><li>美音 / 英音各自配音标和发音按钮</li><li>释义里的英文单词可继续双击查询</li><li>复制、在主窗口打开，一步到位</li><li>kiti 自己的窗口里也能这样取词</li></ul></div>
-      <figure class="annotation-figure"><button class="screenshot-button" data-preview="assets/kiti-popover.jpg" data-caption="kiti 取词浮层：auto 的音标、发音、释义与例句" aria-label="放大查看取词浮层"><img src="assets/kiti-popover.jpg" width="942" height="800" alt="kiti 取词浮层，显示 rationale 的音标、美音英音按钮、释义和例句" loading="lazy"></button><figcaption>取词浮层 · 释义、例句、发音，集中在一处</figcaption></figure>
+  <section class="editing-section" data-screen-label="本机词典与全局快捷键">
+    <div class="wrap">
+      <div class="section-heading"><p class="eyebrow">01 · 本机词典 + 全局快捷键</p><h2>看到生词，<br>不用离开当前页面。</h2><p>音标、美音与英音、释义和例句，就在鼠标旁边。点一下浮层，再到主窗口细看。系统词典需已安装对应词典数据。</p></div>
+      <div class="product-gallery local-gallery">
+<figure class="annotation-figure"><button class="screenshot-button" data-preview="assets/lingo-popover.jpg" data-caption="本地查词浮层 · rationale 的音标、发音、释义和例句" aria-label="放大查看：本地查词浮层 · rationale 的音标、发音、释义和例句"><img src="assets/lingo-popover.jpg" width="848" height="720" alt="lingo 本机词典取词浮层，美音英音独立显示，左下角只保留小鸟 logo" loading="lazy"></button><figcaption>本地查词浮层 · rationale 的音标、发音、释义和例句</figcaption></figure><figure class="annotation-figure"><button class="screenshot-button" data-preview="assets/lingo-keys.jpg" data-caption="全局快捷键 · 自动取词、快速查询、翻译剪贴板和朗读" aria-label="放大查看：全局快捷键 · 自动取词、快速查询、翻译剪贴板和朗读"><img src="assets/lingo-keys.jpg" width="1638" height="1404" alt="快捷键设置，可自定义自动取词、主窗口、快速查询、剪贴板翻译和朗读的全局快捷键" loading="lazy"></button><figcaption>全局快捷键 · 自动取词、快速查询、翻译剪贴板和朗读</figcaption></figure>
+      </div>
     </div>
   </section>
-  <section class="section wrap everyday" data-screen-label="翻译与文档">
-    <div class="section-heading"><p class="eyebrow">不止查单词</p><h2>整句、整篇、整份文档，<br>一个输入框搞定。</h2></div>
-    <div class="feature-list">
-      <article><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 6h22v16H14l-6 5v-5H5zM11 12h10M11 16h6"></path></svg><div><h3>一个输入框，自动分流。</h3><p>输入单词就查词典，输入句子就翻译，拖入文件就开始翻译文档。中文和英文自动识别方向，需要时手动反向。</p></div></article>
-      <article><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 4h12l6 6v18H8zM20 4v6h6M12 16h10M12 21h10"></path></svg><div><h3>文档，分段并发翻译。</h3><p>支持 txt、md、docx、有文字层的 pdf、rtf 与 html。按段落并发翻译，显示进度，可取消、重译，译文自动缓存，导出为文本。</p></div></article>
-      <article><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 12v8h5l7 6V6l-7 6zM22 11a7 7 0 0 1 0 10M25 7a12 12 0 0 1 0 18"></path></svg><div><h3>读给你听。</h3><p>用系统语音朗读单词和译文，可选英文和中文声音，语速从 0.6× 到 1.4×。查词时美音与英音分别发音。</p></div></article>
+  <section class="section wrap" data-screen-label="整句与文章翻译">
+    <div class="section-heading"><p class="eyebrow">02 · 句子与文章翻译</p><h2>从一句话，<br>读到一整篇。</h2><p>选中句子就地查看译文，长段落在主窗口对照阅读；支持方向切换、复制、朗读和历史回看。</p></div>
+    <div class="translation-gallery">
+<figure class="annotation-figure"><button class="screenshot-button" data-preview="assets/lingo-article.jpg" data-caption="文章翻译 · 原文与译文对照，保留历史与朗读操作" aria-label="放大查看：文章翻译 · 原文与译文对照，保留历史与朗读操作"><img src="assets/lingo-article.jpg" width="1990" height="1334" alt="英文演示文章及中文译文，在主窗口查句标签内展示" loading="lazy"></button><figcaption>文章翻译 · 原文与译文对照，保留历史与朗读操作</figcaption></figure><figure class="annotation-figure"><button class="screenshot-button" data-preview="assets/lingo-sentence.jpg" data-caption="整句翻译浮层 · Stay curious. Every new word opens a new window." aria-label="放大查看：整句翻译浮层 · Stay curious. Every new word opens a new window."><img src="assets/lingo-sentence.jpg" width="848" height="492" alt="选中英文整句后显示中文译文的浮层，包含方向、复制与朗读按钮" loading="lazy"></button><figcaption>整句翻译浮层 · Stay curious. Every new word opens a new window.</figcaption></figure>
+    </div>
+    <p class="demo-note">截图中的文章、历史与译文是演示内容，使用真实原生界面渲染，不代表某个模型的翻译测试结果。</p>
+  </section>
+  <section class="editing-section" data-screen-label="大模型与翻译 API 配置">
+    <div class="wrap">
+      <div class="section-heading"><p class="eyebrow">服务由你选择</p><h2>填上你的 Key，<br>用习惯的翻译服务。</h2><p>OpenAI 兼容接口、Google 翻译或 DeepL，按需配置。文字只发送到你选择的服务，lingo 没有自己的翻译服务器。</p></div>
+      <div class="product-gallery">
+<figure class="annotation-figure"><button class="screenshot-button" data-preview="assets/lingo-llm.jpg" data-caption="大模型设置 · 接口地址、API Key、模型与翻译方向" aria-label="放大查看：大模型设置 · 接口地址、API Key、模型与翻译方向"><img src="assets/lingo-llm.jpg" width="1638" height="1404" alt="大模型配置页，显示示例接口地址、遮蔽的演示 Key 和示例模型名" loading="lazy"></button><figcaption>大模型设置 · 接口地址、API Key、模型与翻译方向</figcaption></figure><figure class="annotation-figure"><button class="screenshot-button" data-preview="assets/lingo-api.jpg" data-caption="翻译 API 设置 · Google、DeepL 与网络代理" aria-label="放大查看：翻译 API 设置 · Google、DeepL 与网络代理"><img src="assets/lingo-api.jpg" width="1638" height="1404" alt="翻译 API 设置页，可配置 Google Key、DeepL Key 和网络代理" loading="lazy"></button><figcaption>翻译 API 设置 · Google、DeepL 与网络代理</figcaption></figure>
+      </div>
+      <p class="demo-note">接口地址、模型名与 Key 均为演示配置。Key 存在本机钥匙串；本地词典查询不会上传文字。</p>
     </div>
   </section>
-  <section class="editing-section" data-screen-label="翻译服务与隐私">
-    <div class="wrap editing-layout">
-      <div class="editing-copy"><p class="eyebrow">数据去哪里，自己决定</p><h2>用你自己的<br>翻译服务。</h2><p>kiti 不自带服务器，也不收集你的任何内容。</p><ul class="check-list"><li>单词查询完全在本机完成</li><li>句子与文档发送到你配置的接口：任意 OpenAI 兼容服务，或 Google、DeepL</li><li>API Key 存放在 macOS 钥匙串，可单独为大模型设置代理</li><li>历史保存在本机，可导出、导入，或指定同步文件夹在多台电脑间合并</li></ul></div>
-      <figure class="annotation-figure"><button class="screenshot-button" data-preview="assets/kiti-keys.jpg" data-caption="kiti 设置：通用、快捷键、大模型、翻译 API、朗读" aria-label="放大查看设置界面"><img src="assets/kiti-keys.jpg" width="1820" height="1560" alt="kiti 设置窗口，左侧通用、快捷键、大模型、翻译 API、朗读五个分类，右侧是快捷键设置" loading="lazy"></button><figcaption>设置 · 快捷键、服务、朗读、同步，都在左侧菜单里</figcaption></figure>
-    </div>
+  <section class="section wrap lightweight" data-screen-label="体积与资源占用">
+    <div class="section-heading"><p class="eyebrow">03 · 原生轻量</p><h2>小到随手装上，<br>用时再想起它。</h2><p>保留词典、文章和文档翻译所需的功能，让菜单栏工具保持简单。</p></div>
+    <dl class="size-metrics"><div><dt>下载 ZIP</dt><dd>1.4 <span>MB</span></dd></div><div><dt>应用本体</dt><dd>4.7 <span>MB</span></dd></div><div><dt>第三方运行时</dt><dd>0</dd></div></dl>
+    <p class="resource-copy">SwiftUI + AppKit 原生运行，不内置大模型权重。空闲时安静待命，本机查词不需要后台模型推理；翻译时才请求你配置的接口。</p>
+    <p class="demo-note">体积为 0.1.2 Apple Silicon 包实测，使用十进制 MB。本机发布前空闲样本：主窗口打开、无翻译任务，10 秒内 CPU 读数 0.0%，RSS 约 117 MiB。不同设备与任务会变化，不代表翻译峰值；<a href="https://github.com/xiezhaoye/lingo/blob/main/docs/release-0.1.2.md">查看测量条件 ↗</a>。</p>
   </section>
   <section class="section wrap release-overview" id="updates" data-screen-label="当前版本与常用快捷键">
-    <div><p class="eyebrow">当前公开预览版 · 0.1.1</p><h2>版本与使用说明。</h2><ul class="release-points"><li>菜单栏常驻，任意 App 选中文字即可取词，首次使用需授予辅助功能权限。</li><li>主窗口三个页签：查词、查句、文档，历史按天分组并可恢复。</li><li>文档翻译、朗读、历史导入导出与同步文件夹。</li><li>界面大小可调，⌥＋ / ⌥－ 随时缩放。</li></ul><a class="release-detail" href="https://github.com/xiezhaoye/kiti/releases/tag/v0.1.1">查看 0.1.1 发布说明 ↗</a></div>
+    <div><p class="eyebrow">当前公开预览版 · 0.1.2</p><h2>版本与使用说明。</h2><ul class="release-points"><li>lingo 新名称、透明小鸟图标与原生磨砂界面；保留旧版历史和钥匙串兼容。</li><li>本机查词、全局快捷键，首次使用需授予辅助功能权限。</li><li>主窗口三个页签：查词、查句、文档，历史按天分组并可恢复。</li><li>文档翻译、朗读、历史导入导出与同步文件夹。</li><li>界面大小可调，⌥＋ / ⌥－ 随时缩放。</li></ul><a class="release-detail" href="https://github.com/xiezhaoye/lingo/releases/tag/v0.1.2">查看 0.1.2 发布说明 ↗</a></div>
     <div class="shortcut-panel"><h3>常用快捷键</h3><dl><div><dt>自动取词开关</dt><dd><kbd>⌥D</kbd></dd></div><div><dt>打开主窗口</dt><dd><kbd>⌥空格</kbd></dd></div><div><dt>快速查询</dt><dd><kbd>⌥Q</kbd></dd></div><div><dt>翻译剪贴板内容</dt><dd><kbd>⌥⇧T</kbd></dd></div><div><dt>朗读选中文字</dt><dd><kbd>⌥S</kbd></dd></div><div><dt>放大 / 缩小界面</dt><dd><kbd>⌥＋ / ⌥－</kbd></dd></div></dl><p>以上为默认快捷键，全局快捷键均可在设置中修改。</p></div>
   </section>
   <section class="section wrap faq-section" data-screen-label="常见问题"><div class="section-heading"><p class="eyebrow">开始之前</p><h2>你可能想知道。</h2></div><div class="faq">
-    <details><summary>kiti 免费吗？</summary><p>免费使用，并以 MIT 协议开源。你可以查看、修改和分发代码，条款见 <a href="https://github.com/xiezhaoye/kiti/blob/main/LICENSE">MIT License</a>。</p></details>
-    <details><summary>需要什么系统？首次如何打开？</summary><p>当前预览版支持 macOS 13 及以上的 Apple Silicon Mac。下载 ZIP 后解压，将 kiti.app 拖入“应用程序”。安装包尚未经 Apple 公证；如果系统提示无法验证开发者，可确认来源后在“系统设置 → 隐私与安全性”中选择“仍要打开”。</p></details>
-    <details><summary>为什么需要辅助功能权限？</summary><p>kiti 通过 macOS 辅助功能读取其他 App 里选中的文字；读不到时才模拟 ⌘C 并恢复你的剪贴板。请在“系统设置 → 隐私与安全性 → 辅助功能”（部分系统版本叫“设备控制和数据访问”）里允许 kiti，然后重新打开。菜单栏的“取词诊断…”会显示当前授权和最近几次取词的结果。</p></details>
+    <details><summary>lingo 免费吗？</summary><p>免费使用，并以 MIT 协议开源。你可以查看、修改和分发代码，条款见 <a href="https://github.com/xiezhaoye/lingo/blob/main/LICENSE">MIT License</a>。</p></details>
+    <details><summary>需要什么系统？首次如何打开？</summary><p>当前预览版支持 macOS 13 及以上的 Apple Silicon Mac。下载 ZIP 解压后为 lingo.app，将其拖入“应用程序”即可。安装包尚未经 Apple 公证；如果系统提示无法验证开发者，可确认来源后在“系统设置 → 隐私与安全性”中选择“仍要打开”。</p></details>
+    <details><summary>为什么需要辅助功能权限？</summary><p>lingo 通过 macOS 辅助功能读取其他 App 里选中的文字；读不到时才模拟 ⌘C 并恢复你的剪贴板。请在“系统设置 → 隐私与安全性 → 辅助功能”（部分系统版本叫“设备控制和数据访问”）里允许 lingo，然后重新打开。菜单栏的“取词诊断…”会显示当前授权和最近几次取词的结果。</p></details>
     <details><summary>需要联网或大模型吗？</summary><p>查单词不需要，直接使用本机的系统词典。翻译句子和文档需要一个翻译服务：任何 OpenAI 兼容接口（默认指向本机 127.0.0.1:3425），或者 Google、DeepL。接口地址、模型与 Key 都在设置里配置。</p></details>
-    <details><summary>我的文字会上传吗？</summary><p>单词查询不会离开你的电脑。翻译句子与文档时，文字只会发送到你自己配置的接口；API Key 存放在 macOS 钥匙串。kiti 没有自己的服务器，也不含统计和追踪脚本。</p></details>
+    <details><summary>我的文字会上传吗？</summary><p>单词查询不会离开你的电脑。翻译句子与文档时，文字只会发送到你自己配置的接口；API Key 存放在 macOS 钥匙串。lingo 没有自己的服务器，也不含统计和追踪脚本。</p></details>
     <details><summary>支持扫描版 PDF 吗？</summary><p>暂不支持。没有文字层的扫描件会提示无法读取；带文字层的 PDF 可以正常翻译。</p></details>
-    <details><summary>关掉窗口后 kiti 去哪了？</summary><p>默认继续留在菜单栏，保持取词可用。可在设置 → 通用里选择“关闭主窗口时退出”，也可以打开“在 Dock 中显示”。</p></details>
+    <details><summary>关掉窗口后 lingo 去哪了？</summary><p>默认继续留在菜单栏，保持取词可用。可在设置 → 通用里选择“关闭主窗口时退出”，也可以打开“在 Dock 中显示”。</p></details>
   </div></section>
-  <section class="download-section" id="download" data-screen-label="下载 kiti"><div class="wrap"><img src="assets/logo.png" width="76" height="76" alt="kiti" loading="lazy"><h2>下一个生词，<br>交给 kiti。</h2><p>给你的 Mac，添一只会查词的小鸟。</p><div class="hero-actions"><a class="button primary" href="https://kiti-dl.xiezhaoye.site/kiti-0.1.1-macos-arm64.zip">下载 kiti 0.1.1 <span aria-hidden="true">↓</span></a><a class="button secondary" href="https://github.com/xiezhaoye/kiti">GitHub 项目 <span aria-hidden="true">↗</span></a></div><p class="compatibility">macOS 13+ · Apple Silicon · 免费开源</p><a class="release-notes" href="https://github.com/xiezhaoye/kiti/releases">查看版本与更新记录 <span aria-hidden="true">↗</span></a></div></section>
+  <section class="download-section" id="download" data-screen-label="下载 lingo"><div class="wrap"><img src="assets/logo.png?v=20261030" width="76" height="76" alt="lingo" loading="lazy"><h2>下一个生词，<br>交给 lingo。</h2><p>给你的 Mac，添一只会查词的小鸟。</p><div class="hero-actions"><a class="button primary" href="https://kiti-dl.xiezhaoye.site/lingo-0.1.2-macos-arm64.zip">下载 lingo 0.1.2 <span aria-hidden="true">↓</span></a><a class="button secondary" href="https://github.com/xiezhaoye/lingo">GitHub 项目 <span aria-hidden="true">↗</span></a></div><p class="compatibility">v0.1.2 · ZIP 约 1.4 MB · macOS 13+ · Apple Silicon</p><a class="release-notes" href="https://github.com/xiezhaoye/lingo/releases">查看版本与更新记录 <span aria-hidden="true">↗</span></a></div></section>
 </main>
-<footer class="wrap footer"><a class="brand" href="#"><img src="assets/logo.png" width="26" height="26" alt=""><span>kiti</span></a><p>由 <a href="https://www.xiezhaoye.site/">xiezhaoye</a> 开发。</p><nav aria-label="页脚导航"><a href="https://github.com/xiezhaoye/kiti">GitHub</a><a href="https://github.com/xiezhaoye/kiti/issues">反馈问题</a><a href="https://github.com/xiezhaoye/kiti/blob/main/LICENSE">MIT License</a></nav></footer>
+<footer class="wrap footer"><a class="brand" href="#"><img class="brand-wordmark" src="assets/brand.svg" width="140" height="44" alt="lingo"></a><p>由 <a href="https://www.xiezhaoye.site/">xiezhaoye</a> 开发。</p><nav aria-label="页脚导航"><a href="https://www.xiezhaoye.site/projects/">全部项目</a><a href="https://github.com/xiezhaoye/lingo">GitHub</a><a href="https://github.com/xiezhaoye/lingo/issues">反馈问题</a><a href="https://github.com/xiezhaoye/lingo/blob/main/LICENSE">MIT License</a></nav></footer>
 <dialog id="image-preview" aria-label="产品截图大图"><button class="preview-close" aria-label="关闭大图">关闭 <span aria-hidden="true">×</span></button><img alt=""><p></p></dialog>
 </body>
 </html>
