@@ -3,12 +3,21 @@
 app/.build/
 app/build/
 landing/dist/
+landing/.wrangler/
 .claude/
 
-# Local UI regression captures may contain real history; publish demo shots in landing/assets instead.
-/designs/kiti-ui-review/implementation/branding/
-/designs/kiti-ui-review/implementation/dock90/
-/designs/lingo-glass-review/implementation/**/*.png
-/designs/lingo-glass-review/implementation/**/*.jpg
-/scripts/product-shots/build.log
-/designs/lingo-glass-review/implementation/build.log
+# Internal project notes stay on this machine; only public documentation is tracked.
+/*.md
+!/README.md
+!/CONTRIBUTING.md
+!/CHANGELOG.md
+!/SECURITY.md
+/app/*.md
+/landing/*.md
+/design/
+/designs/
+/scripts/product-shots/
+/docs/internal/
+
+# Superseded captures may contain real user history.
+/landing/assets/kiti-*.jpg
