@@ -9,9 +9,17 @@ for (const required of ["assets/logo.png", "assets/lingo-main.jpg", "assets/ling
 }
 rmSync(dist, { recursive: true, force: true });
 mkdirSync(dist, { recursive: true });
-for (const file of ["index.html", "style.css", "site.js", "404.html", "robots.txt", "sitemap.xml", "_headers", "assets"]) {
+for (const file of ["index.html", "style.css", "site.js", "404.html", "robots.txt", "sitemap.xml", "_headers"]) {
   cpSync(join(root, file), join(dist, file), { recursive: true });
 }
+
+// Publish only reviewed product media, never every local file in assets/.
+const publicAssets = [
+  "logo.png", "brand.svg", "lingo-main.jpg", "lingo-popover.jpg", "lingo-article.jpg",
+  "lingo-sentence.jpg", "lingo-keys.jpg", "lingo-llm.jpg", "lingo-api.jpg",
+];
+mkdirSync(join(dist, "assets"), { recursive: true });
+for (const file of publicAssets) cpSync(join(root, "assets", file), join(dist, "assets", file));
 
 // Content-addressed assets prevent a cached stylesheet or script from outliving its page markup.
 let output = html;
